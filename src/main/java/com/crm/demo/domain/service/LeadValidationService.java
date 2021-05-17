@@ -13,6 +13,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.jeasy.random.EasyRandom;
 import org.mockserver.integration.ClientAndServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,8 @@ public class LeadValidationService
 
     private static final HttpClient HTTP_CLIENT = HttpClientBuilder.create().build();
 
+    private static ClientAndServer server = null;
+
     private LeadRepository leadRepository;
 
     private ScoreRepository scoreRepository;
@@ -53,7 +56,7 @@ public class LeadValidationService
                                   final ScoreRepository scoreRepository,
                                   final NationalRegistryService nationalRegistryService,
                                   final JudicialService judicialService,
-                                  final ObjectMapper objectMapper )
+                                  @Qualifier( "customObjectMapper" ) final ObjectMapper objectMapper )
     {
         this.leadRepository = leadRepository;
         this.scoreRepository = scoreRepository;
@@ -83,10 +86,14 @@ public class LeadValidationService
         //             .stubNationalRegistryResponse( lead )
         //             .status();
 
-        MockServerConfig mockServerConfig = new MockServerConfig();
-        final ClientAndServer server = startClientAndServer( 9000 );
-        mockServerConfig.stubNationalRegistryResponse( lead, server );
-        mockServerConfig.stubJudicialRegistryResponse( leadId, server );
+        if ( isASampleLead )
+        {
+            MockServerConfig mockServerConfig = new MockServerConfig();
+            server = startClientAndServer( 9000 );
+            mockServerConfig.stubNationalRegistryResponse( lead, server );
+            mockServerConfig.stubJudicialRegistryResponse( leadId, server );
+        }
+
 
         try
         {
@@ -102,7 +109,7 @@ public class LeadValidationService
 
             if ( leadHasJudicialRecords.isCompletedExceptionally() || leadMatchesNationalServiceAndInternalOnesFuture.isCompletedExceptionally() )
             {
-                server.stop();
+                stopMockServer( isASampleLead );
                 log.warn( "Processing completed with exceptions for lead id {}", leadId );
                 return LeadValidationResponseDto.builder()
                                                 .lead( lead )
@@ -116,7 +123,8 @@ public class LeadValidationService
         {
             System.out.println( "There was an error processing customer with id: " + leadId );
             log.warn( "There was an error processing lead with id: {}", e.getMessage() );
-            server.stop();
+
+            stopMockServer( isASampleLead );
             return LeadValidationResponseDto.builder()
                                             .lead( lead )
                                             .score( null )
@@ -132,21 +140,21 @@ public class LeadValidationService
 
             if ( score < 60 )
             {
-                server.stop();
+                stopMockServer( isASampleLead );
                 return result.score( score )
                              .isAProspect( false )
                              .reasonMessage( "The score of the lead is below the accepted limit" )
                              .build();
             }
 
-            server.stop();
+            stopMockServer( isASampleLead );
             return result.score( score )
                          .isAProspect( true )
                          .reasonMessage( "The lead complies with the requested criteria" )
                          .build();
         }
 
-        server.stop();
+        stopMockServer( isASampleLead );
         return LeadValidationResponseDto.builder()
                                         .lead( lead )
                                         .score( null )
@@ -156,7 +164,7 @@ public class LeadValidationService
     }
 
 
-    @Async
+    @Async("externalServicesExecutor")
     public CompletableFuture<Boolean> leadFromNationalRegistrySystemMatchesInternalDB( final Lead lead,
                                                                                        final Boolean isASampleLead )
     {
@@ -172,7 +180,7 @@ public class LeadValidationService
     }
 
 
-    @Async
+    @Async("externalServicesExecutor")
     public CompletableFuture<Boolean> leadHasJudicialRecords( final Lead lead,
                                                               final Boolean isASampleLead )
     {
@@ -197,5 +205,14 @@ public class LeadValidationService
                                  .build();
 
         return leadRepository.save( newLead );
+    }
+
+
+    private void stopMockServer( final boolean isASampleLead )
+    {
+        if ( isASampleLead )
+        {
+            server.stop();
+        }
     }
 }

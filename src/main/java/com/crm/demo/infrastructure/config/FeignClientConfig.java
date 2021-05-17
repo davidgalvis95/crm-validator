@@ -4,10 +4,13 @@ import com.crm.demo.infrastructure.client.JudicialRegistryClient;
 import com.crm.demo.infrastructure.client.NationalRegistryFeignClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Feign;
+import feign.gson.GsonDecoder;
+import feign.gson.GsonEncoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,25 +42,25 @@ public class FeignClientConfig
 
 
     @Bean
-    public NationalRegistryFeignClient nationalRegistryFeignClient( final ObjectMapper objectMapper )
+    public NationalRegistryFeignClient nationalRegistryFeignClient( @Qualifier( "customObjectMapper" ) ObjectMapper objectMapper )
     {
         log.info( "Creating NationalRegistryFeignClient" );
-        final JacksonDecoder jacksonDecoder = new JacksonDecoder( objectMapper );
         return Feign.builder()
                     .encoder( new JacksonEncoder( objectMapper ) )
-                    .decoder( jacksonDecoder )
+                    .decoder( new JacksonDecoder( objectMapper ) )
+                    .errorDecoder( new ExternalProcessingErrorDecoder() )
                     .target( NationalRegistryFeignClient.class, nationalRegistryUrl );
     }
 
 
     @Bean
-    public JudicialRegistryClient judicialRegistryClient( final ObjectMapper objectMapper )
+    public JudicialRegistryClient judicialRegistryClient()
     {
         log.info( "Creating JudicialRegistryClient" );
-        final JacksonDecoder jacksonDecoder = new JacksonDecoder( objectMapper );
         return Feign.builder()
-                    .encoder( new JacksonEncoder( objectMapper ) )
-                    .decoder( jacksonDecoder )
+                    .encoder( new GsonEncoder() )
+                    .decoder( new GsonDecoder() )
+                    .errorDecoder( new ExternalProcessingErrorDecoder() )
                     .target( JudicialRegistryClient.class, judicialServiceUrl );
     }
 
