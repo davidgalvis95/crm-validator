@@ -10,6 +10,15 @@ services:
       - 27017:27017
     volumes:
       - mongodb_data_container:/data/db
-
+  external_service:
+    image: davidgalvis1995/externalleadvalidator:latest
+    container_name: external_service
+    ports:
+      - 8000:8000
+  crm_lead_validator:
+    image: davidgalvis1995/crm_lead_validator:latest
+    container_name: crm_lead_validator
+    ports:
+      - 7000:7000
 volumes:
   mongodb_data_container:
