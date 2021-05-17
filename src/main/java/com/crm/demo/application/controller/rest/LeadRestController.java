@@ -1,10 +1,7 @@
 package com.crm.demo.application.controller.rest;
 
-import com.crm.demo.domain.Lead;
-import com.crm.demo.domain.LeadDto;
 import com.crm.demo.domain.LeadValidationResponseDto;
 import com.crm.demo.domain.service.ValidationService;
-import com.crm.demo.infrastructure.client.NationalRegistryFeignClient;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +28,6 @@ public class LeadRestController
 {
     private final ValidationService leadValidationService;
 
-    com.crm.demo.infrastructure.client.NationalRegistryFeignClient nationalRegistryFeignClient;
-
     private static final Map<Integer, String> REASONS_RESULT_MAP = Collections.unmodifiableMap( reasonsMap() );
 
 
@@ -43,7 +38,6 @@ public class LeadRestController
         final Pattern digitPattern = Pattern.compile( "\\d{9}" );
         if ( digitPattern.matcher( leadId.toString() ).matches() )
         {
-            nationalRegistryFeignClient.getLeadFromNationalRegistry( Lead.builder().idNumber( leadId ).build() ); 
             LeadValidationResponseDto leadValidationResponseDto = leadValidationService.validateLead( leadId, isSampleLead );
             if ( REASONS_RESULT_MAP.get( 4 ).equals( leadValidationResponseDto.getReasonMessage() ) ||
                  REASONS_RESULT_MAP.get( 5 ).equals( leadValidationResponseDto.getReasonMessage() ) )

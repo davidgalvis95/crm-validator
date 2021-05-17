@@ -30,7 +30,7 @@ public class NationalRegistryClientMock
                                                          final ObjectMapper objectMapper,
                                                          final HttpClient client )
     {
-        LeadDto response = null;
+        LeadDto response;
         final String url = URL + leadId;
         try
         {

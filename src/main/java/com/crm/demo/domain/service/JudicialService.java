@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -28,24 +26,18 @@ public class JudicialService
 
     public Boolean validateIfLeadHasAnyJudicialRecord( final int leadId )
     {
-        ResponseEntity<JudicialRecordsDto> judicialRecords;
+        JudicialRecordsDto judicialRecords;
         try
         {
             judicialRecords = judicialRegistryClient.getJudicialRecordsByLeadId( leadId );
-
-            if ( judicialRecords.getStatusCode() == HttpStatus.NOT_FOUND || judicialRecords.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR )
-            {
-                return null;
-            }
         }
-        catch ( Exception e )
+        catch ( ExternalPublicServiceProcessingException e )
         {
             log.error( Arrays.toString( e.getStackTrace() ) + "====>" + e.getMessage() );
-            throw new ExternalPublicServiceProcessingException( "ERROR: Failed to get record from judicial registry for leadId" + leadId );
+            throw new RuntimeException( "ERROR: Failed to get record from judicial registry for leadId" + leadId );
         }
 
         return Optional.of( judicialRecords )
-                       .map( ResponseEntity::getBody )
                        .map( JudicialRecordsDto::getHasJudicialRecords )
                        .orElseGet( () -> {
                            log.warn( "No data is available for the id {} in judicial systems, the lead is not a valid prospect", leadId );

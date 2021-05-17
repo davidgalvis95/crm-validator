@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
@@ -18,7 +17,6 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @EnableMongoRepositories
-@EnableFeignClients
 @SpringBootApplication
 public class CrmApplication
       implements CommandLineRunner
@@ -26,6 +24,8 @@ public class CrmApplication
     private final ConfigurableApplicationContext context;
 
     private final CliLeadController customerController;
+
+    private static final Scanner scanner = new Scanner( System.in );
 
 
     @Autowired
@@ -50,38 +50,44 @@ public class CrmApplication
     {
         try
         {
-            Scanner scanner = new Scanner( System.in );
-            operateApplication( scanner );
-        }catch ( IllegalStateException e ){
-            System.err.println("INFO: Closing application due to inactivity");
+            operateApplication();
+        }
+        catch ( IllegalStateException e )
+        {
+            System.err.println( "INFO: Closing application due to inactivity" );
         }
     }
 
 
-    public void operateApplication( final Scanner scanner )
+    public void operateApplication()
     {
         System.out.print( "======================\nMENU OPTIONS\n======================\n\n" );
         System.out.println( "1. Press 'n' to execute a new search" );
         System.out.println( "2. Press 'e' to exit and close the application" );
-        final String input = scanner.next();
 
-        if ( input.equals( "n" ) )
+        String input;
+        if ( scanner.hasNext() )
         {
-            validateCustomer( scanner );
-        }
-        else if ( input.equals( "e" ) )
-        {
-            context.close();
-        }
-        else
-        {
-            System.err.print( "\nERROR: Input '" + input + "', is not a valid option, please select a valid option\n\n" );
-            operateApplication( scanner );
+            input = scanner.next();
+            if ( input.equals( "n" ) )
+            {
+                validateCustomer();
+            }
+            else if ( input.equals( "e" ) )
+            {
+                scanner.close();
+                context.close();
+            }
+            else
+            {
+                System.err.print( "\nERROR: Input '" + input + "', is not a valid option, please select a valid option\n\n" );
+                operateApplication();
+            }
         }
     }
 
 
-    private void validateCustomer( final Scanner scanner )
+    private void validateCustomer()
     {
         do
         {
@@ -99,7 +105,7 @@ public class CrmApplication
                 else
                 {
                     System.err.print( "\nERROR: Input: '" + sampleLead + "', is not a valid option, please select a valid option. " );
-                    validateCustomer( scanner );
+                    validateCustomer();
                 }
             }
             else
@@ -107,9 +113,9 @@ public class CrmApplication
                 System.err.print( "\nERROR: Input: '" + input + "', is not a valid option, please select a valid option. " );
             }
         }
-        while ( continueValidating( scanner ) );
+        while ( continueValidating() );
 
-        operateApplication( scanner );
+        operateApplication();
     }
 
 
@@ -131,7 +137,7 @@ public class CrmApplication
     }
 
 
-    private boolean continueValidating( Scanner scanner )
+    private boolean continueValidating()
     {
 
         while ( true )

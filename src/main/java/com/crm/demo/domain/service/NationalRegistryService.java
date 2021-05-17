@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -30,15 +28,10 @@ public class NationalRegistryService
 
     public ValidationResultAgainstNationalRegistryDto validateLeadAgainstNationalRegistry( final Lead lead )
     {
-        ResponseEntity<LeadDto> leadFromNationalRegistry;
+        LeadDto leadFromNationalRegistry;
         try
         {
             leadFromNationalRegistry = nationalRegistryFeignClient.getLeadFromNationalRegistry( lead );
-
-            if ( leadFromNationalRegistry.getStatusCode() == HttpStatus.NOT_FOUND || leadFromNationalRegistry.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR )
-            {
-                return validateResponse( lead, null );
-            }
         }
         catch ( Exception e )
         {
@@ -46,7 +39,7 @@ public class NationalRegistryService
             throw new ExternalPublicServiceProcessingException( "ERROR: Failed to get record from national registry for leadId" + lead.getIdNumber() );
         }
 
-        return validateResponse( lead, leadFromNationalRegistry.getBody() );
+        return validateResponse( lead, leadFromNationalRegistry );
     }
 
 
@@ -59,10 +52,10 @@ public class NationalRegistryService
         {
             leadFromNationalRegistry = nationalRegistryClientMock.getMockedResponseFromNationalService( lead.getIdNumber(), objectMapper, client );
         }
-        catch ( Exception e )
+        catch ( ExternalPublicServiceProcessingException e )
         {
             log.error( Arrays.toString( e.getStackTrace() ) + "====>" + e.getMessage() );
-            throw new ExternalPublicServiceProcessingException( "ERROR: Failed to get record from national sample registry for leadId" + lead.getIdNumber() );
+            throw new RuntimeException( "ERROR: Failed to get record from national sample registry for leadId" + lead.getIdNumber() );
         }
 
         return validateResponse( lead, leadFromNationalRegistry );
@@ -92,10 +85,10 @@ public class NationalRegistryService
     private boolean leadsFromNationalServiceAndInternalServiceAreEqual( final Lead lead,
                                                                         final LeadDto leadDto )
     {
-        return lead.getIdNumber() == leadDto.getIdNumber() &&
+        return lead.getIdNumber().equals( leadDto.getIdNumber() ) &&
                lead.getFirstName().equals( leadDto.getFirstName() ) &&
                lead.getLastName().equals( leadDto.getLastName() ) &&
-               lead.getBirthDate().equals( leadDto.getBirthDate() ) &&
+               lead.getBirthDate().isEqual( leadDto.getBirthDate() ) &&
                lead.getEmail().equals( leadDto.getEmail() );
     }
 }
