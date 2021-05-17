@@ -1,24 +1,43 @@
 version: '3.7'
 services:
+  crm_lead_validator:
+    image: davidgalvis1995/crm_lead_validator:v6
+    container_name: crmleadvalidatorcontainer
+    ports:
+      - 7000:7000
+    links:
+      - external_service
+      - mongodb_container
+    depends_on:
+      - mongodb_container
+      - external_service
+    networks:
+      - shared-net
+
+  external_service:
+    image: davidgalvis1995/externalleadvalidator:latest
+    container_name: externalservicecontainer
+    ports:
+      - 8000:8000
+    networks:
+      - shared-net
+
   mongodb_container:
+    container_name: mongodbcontainer
     image: mongo:latest
     environment:
-      #This user is created in the admin authentication database and given the role of root, which is a "superuser" role.
       MONGO_INITDB_ROOT_USERNAME: user
       MONGO_INITDB_ROOT_PASSWORD: password
     ports:
       - 27017:27017
     volumes:
       - mongodb_data_container:/data/db
-  external_service:
-    image: davidgalvis1995/externalleadvalidator:latest
-    container_name: external_service
-    ports:
-      - 8000:8000
-  crm_lead_validator:
-    image: davidgalvis1995/crm_lead_validator:latest
-    container_name: crm_lead_validator
-    ports:
-      - 7000:7000
+    networks:
+      - shared-net
+
 volumes:
   mongodb_data_container:
+
+networks:
+  shared-net:
+    driver: bridge
