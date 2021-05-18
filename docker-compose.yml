@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   crm_lead_validator:
-    image: davidgalvis1995/crm_lead_validator:v6
+    image: davidgalvis1995/crm_lead_validator:v7
     container_name: crmleadvalidatorcontainer
     ports:
       - 7000:7000
