@@ -25,7 +25,7 @@ public class CrmApplication
 
     private final CliLeadController customerController;
 
-    private static final Scanner scanner = new Scanner( System.in );
+    private Scanner scanner = new Scanner( System.in );
 
 
     @Autowired
@@ -63,9 +63,10 @@ public class CrmApplication
     {
         System.out.print( "======================\nMENU OPTIONS\n======================\n\n" );
         System.out.println( "1. Press 'n' to execute a new search" );
-        System.out.println( "2. Press 'e' to exit and close the application" );
+        System.out.println( "2. Press 'e' to exit and close the application\n" );
 
         String input;
+//        Scanner scanner = new Scanner( System.in );
         if ( scanner.hasNext() )
         {
             input = scanner.next();
