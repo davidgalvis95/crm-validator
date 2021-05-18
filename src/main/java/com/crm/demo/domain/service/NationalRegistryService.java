@@ -69,7 +69,7 @@ public class NationalRegistryService
         {
             log.warn( "The leadId {} is not a valid prospect because of data inconsistency against national services", lead.getIdNumber() );
             return ValidationResultAgainstNationalRegistryDto.builder()
-                                                             .id( leadFromNationalRegistry.getIdNumber() )
+                                                             .id( lead.getIdNumber() )
                                                              .isValid( false )
                                                              .reason( "There is no data, the data is not updated or there is a mismatch against the National Systems" )
                                                              .build();

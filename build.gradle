@@ -45,6 +45,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.10.0'
+    testImplementation 'org.mockito:mockito-core:3.10.0'
 }
 
 test {

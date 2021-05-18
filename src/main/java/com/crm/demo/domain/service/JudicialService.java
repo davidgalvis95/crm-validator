@@ -37,7 +37,7 @@ public class JudicialService
             throw new RuntimeException( "ERROR: Failed to get record from judicial registry for leadId" + leadId );
         }
 
-        return Optional.of( judicialRecords )
+        return Optional.ofNullable( judicialRecords )
                        .map( JudicialRecordsDto::getHasJudicialRecords )
                        .orElseGet( () -> {
                            log.warn( "No data is available for the id {} in judicial systems, the lead is not a valid prospect", leadId );
