@@ -17,7 +17,11 @@ GitHub of this repo: `https://github.com/davidgalvis95/crm-validator`
 5) Once the steps 1 and 2 are completed you can run this service by following the instructions in the step 5 (using `Intellij` and **recommended**). Or if you prefer the command, then `./gradlew bootRun` in the root directory.
 6) **Optional but a good suggestion:** If you have `node` and installed in your machine, you can run the UI client that has been created specifically for this project using `React.js`: `https://github.com/davidgalvis95/crm-lead-validator-UI-client`, go to the repository and follow the instructions on its `README.md`, it is pretty simple to use (**remember to have this API and its dependencies running before running the custom client**). If you do not want to use that option you can reach this service through a client like postman, or by CLI.
 7) If your option was to do it using the `CLI` you should go to your IDE, in this case the project was built with `Intellij`, so go there and select the `Run/Debug configurations` and fill up the required fields as follows: ![src/main/resources/templates/idea-config.png](src/main/resources/templates/idea-config.png)
-8) If your intention is to use it through the `REST` endpoint then, just run the service using any of the already described ways in the steps 4 and 6.
+8) If your intention is to use it through the `REST` endpoint then, just run the service using any of the already described ways in the steps 4 and 6. Here is an example of the curl request:
+
+`   curl --location --request GET 'http://localhost:7000/api/v1/validate/123456789?isSampleLead=true' \
+   --header 'Content-Type: application/json' \
+   --data-raw ''`
 
 ### **Architecture**
 

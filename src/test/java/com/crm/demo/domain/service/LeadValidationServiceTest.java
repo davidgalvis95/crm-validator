@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
+//TODO This tests will fail if mongo docker container is not running
 @SpringBootTest
 @ExtendWith( SpringExtension.class )
 class LeadValidationServiceTest

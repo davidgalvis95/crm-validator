@@ -70,12 +70,28 @@ public class LeadValidationService
     public LeadValidationResponseDto validateLead( final Integer leadId,
                                                    final boolean isASampleLead )
     {
-        Lead lead = leadRepository.findByIdNumber( leadId );
-
-        if ( Objects.isNull( lead ) )
+        //TODO if you dont deploy mongo DB container, then send as a query param the isSampleLead=true, so that it won't timeout while reaching the not existent mongo db container
+        Lead lead;
+        if ( isASampleLead )
         {
-            lead = createNewRandomLead( leadId );
+            //Simulating the request to the DB
+            lead = Lead.builder()
+                       .idNumber( leadId )
+                       .firstName( GENERATOR.nextObject( String.class ) )
+                       .lastName( GENERATOR.nextObject( String.class ) )
+                       .birthDate( GENERATOR.nextObject( LocalDate.class ) )
+                       .email( GENERATOR.nextObject( String.class ) + "@addi.com" )
+                       .build();
+        }else {
+            lead = leadRepository.findByIdNumber( leadId );
+
+            if ( Objects.isNull( lead ) )
+            {
+                lead = createNewRandomLead( leadId );
+            }
         }
+
+
 
         List<Boolean> validationResults = new ArrayList<>();
 
@@ -164,7 +180,7 @@ public class LeadValidationService
     }
 
 
-    @Async("externalServicesExecutor")
+    @Async( "externalServicesExecutor" )
     public CompletableFuture<Boolean> leadFromNationalRegistrySystemMatchesInternalDB( final Lead lead,
                                                                                        final Boolean isASampleLead )
     {
@@ -180,7 +196,7 @@ public class LeadValidationService
     }
 
 
-    @Async("externalServicesExecutor")
+    @Async( "externalServicesExecutor" )
     public CompletableFuture<Boolean> leadHasJudicialRecords( final Lead lead,
                                                               final Boolean isASampleLead )
     {

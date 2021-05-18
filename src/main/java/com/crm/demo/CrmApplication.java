@@ -64,7 +64,7 @@ public class CrmApplication
         System.out.print( "======================\nMENU OPTIONS\n======================\n\n" );
         System.out.println( "1. Press 'n' to execute a new search" );
         System.out.println( "2. Press 'e' to exit and close the application\n" );
-
+        //TODO The access through CLI won't be possible if mongo db container is not running
         String input;
 //        Scanner scanner = new Scanner( System.in );
         if ( scanner.hasNext() )
