@@ -6,7 +6,7 @@ GitHub of this repo: `https://github.com/davidgalvis95/crm-validator`
 ### **Terms to take into account:**
 
 * A `Sample Lead` is an id that will be validated using mocked services, in this case the national and judicial service will be replaced by `MockServer` 
-* If you select a `Not Sample Lead`, please be sure that you have run this command before `docker-compose up -d external_service` because internally, if the lead is not a sample, and the service will try to reach to the real national and judicial services through feign clients, which will fail because of that.
+* If you select a `Not Sample Lead`, please be sure that you have run this command before: `docker-compose up -d external_service` because internally, if the lead is not a sample, and the service will try to reach to the real national and judicial services through feign clients, which will fail because of that.
 
 ### **How to run the application and its dependencies:**
 
