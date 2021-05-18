@@ -34,4 +34,4 @@ In case you are interested in using the UI client that has been created for this
 
 Remember that if you want to use this custom UI client, you should have the crm-lead-validator running. Is recommended that if you want to test with the client, you should run it for simplicity with the docker command explained in the step 2 of the 'How to run the application and its dependencies' section.
 
-
+Thank you! :)
