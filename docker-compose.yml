@@ -35,6 +35,18 @@ services:
     networks:
       - shared-net
 
+  crm_validator_client:
+    image: davidgalvis1995/crm-validator-client
+    ports:
+      - 3000:80
+    restart: always
+    depends_on:
+      - mongodb_container
+      - external_service
+      - crm_lead_validator
+    networks:
+      - shared-net
+
 volumes:
   mongodb_data_container:
 

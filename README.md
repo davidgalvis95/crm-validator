@@ -25,13 +25,13 @@ The architecture of the application is shown in the next image
 ### **How to run the application and its dependencies:**
 
 1) Stand over the root directory of the project `/cli-crm-validator-master`
-2) If you just want to run all the integration of the services (with `docker`, except the UI react.js client) you will need to stand over the root repository and execute the following command: `docker-compose up`
+2) If you just want to run all the integration(with `docker`) of the services including the custom UI `React.js` client that has been created for this project(`https://github.com/davidgalvis95/crm-lead-validator-UI-client`), you must be at the root folder of this project and execute the following command: `docker-compose up`. The client runs on the `http://localhost:3000/` url.
 3) Run the following command in your terminal `docker-compose up -d mongodb_container` to start the Mongo DB, which is needed for this project.
 4) **Optional:** If you want to use the real National Service and the real Judicial Service then run `docker-compose up -d external_service`, this is another `java/spring` service, which can be found here: `https://github.com/davidgalvis95/crm-lead-validator-external-service` 
 5) Once the steps 1 and 2 are completed you can run this service by following the instructions in the step 5 (using `Intellij` and **recommended**). Or if you prefer the command, then `./gradlew bootRun` in the root directory.
-6) **Optional but a good suggestion:** If you have `node` and installed in your machine, you can run the UI client that has been created specifically for this project using `React.js`: `https://github.com/davidgalvis95/crm-lead-validator-UI-client`, go to the repository and follow the instructions on its `README.md` (it runs in `http://localhost:3000/` and is launched with `npm start`), it is pretty simple to use (**remember to have this API and its dependencies running before running the custom client**). If you do not want to use that option you can reach this service through a client like postman, or by CLI.
+6) **Optional:** Also if you have `node` and installed in your machine, you can run the UI client that has been created specifically for this project **without using docker**: To do so, go to the repository and follow the instructions on its `README.md` (it runs in `http://localhost:3000/` and is launched with `npm start`), it is pretty simple to use (**remember to have this API and its dependencies running before running the custom client**). If you do not want to use that option you can reach this service through a `REST` client like `Postman`, or by CLI as described in steps 7 and 8.
 7) If your option was to do it using the `CLI` you should go to your IDE, in this case the project was built with `Intellij`, so go there and select the `Run/Debug configurations` and fill up the required fields as follows: ![src/main/resources/templates/idea-config.png](src/main/resources/templates/idea-config.png)
-8) If your intention is to use it through the `REST` endpoint then, just run the service using any of the already described ways in the steps 4 and 6. Here is an example of the curl request:
+8) If your intention is to use it through the `REST` endpoint directly, then: Run the service using any of the already described ways in the steps 4 and 6. Here is an example of the curl request:
 
 ##### Example Request
 
@@ -69,5 +69,6 @@ Remember that if you want to use this custom UI client, you should have the crm-
 ##### Docker Images
 * `https://hub.docker.com/repository/docker/davidgalvis1995/crm_lead_validator`
 * `https://hub.docker.com/repository/docker/davidgalvis1995/externalleadvalidator`
+* `https://hub.docker.com/repository/docker/davidgalvis1995/crm-validator-client`
 
 Thank you! :)
