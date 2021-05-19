@@ -82,7 +82,7 @@ public class LeadValidationService
                        .birthDate( GENERATOR.nextObject( LocalDate.class ) )
                        .email( GENERATOR.nextObject( String.class ) + "@addi.com" )
                        .build();
-        }else {
+        } else {
             lead = leadRepository.findByIdNumber( leadId );
 
             if ( Objects.isNull( lead ) )

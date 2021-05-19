@@ -3,10 +3,24 @@ Elaborated by Ivan David Galvis Sandoval
 
 GitHub of this repo: `https://github.com/davidgalvis95/crm-validator`
 
-### **Terms to take into account:**
+### **Terms and Assumptions to take into account:**
 
+* A lead will be validated based on its id only, which is an integer number in this case.
+* A lead in this case will only be composed of id, first name, last name, birthdate and email, but can be extended yo more fields if needed.
+* Some lead id, could have changing scores throughout the time, so different ones. Moreover, since here this project is based in mocked external services, while the external one is a real spring microservice, it is not a service with a real DB, so it cannot store real data and will sometimes return something different for the same lead id. The only information that should not change is the lead personal data, due that this service has a mongo db storing that data in the beginning of the validation process. 
 * A `Sample Lead` is an id that will be validated using mocked services, in this case the national and judicial service will be replaced by `MockServer` 
 * If you select a `Not Sample Lead`, please be sure that you have run this command before: `docker-compose up -d external_service` because internally, if the lead is not a sample, and the service will try to reach to the real national and judicial services through feign clients, which will fail because of that.
+
+### **Architecture**
+
+The application is basically composed of 3 independent components, following the hexagonal architecture pattern, the application component, the domain one and the infrastructure one, as it can be seen in the structure of the project and its dependencies (Mongo DB, external services, configuration, UI client, CLI controllers).
+The architecture of the application is shown in the next image
+
+![src/main/resources/templates/crm-service-architecture.jpg](src/main/resources/templates/crm-service-architecture.jpg)
+
+* The application layer = purple.
+* The domain layer = green.
+* The infrastructure components = yellow.
 
 ### **How to run the application and its dependencies:**
 
@@ -19,16 +33,28 @@ GitHub of this repo: `https://github.com/davidgalvis95/crm-validator`
 7) If your option was to do it using the `CLI` you should go to your IDE, in this case the project was built with `Intellij`, so go there and select the `Run/Debug configurations` and fill up the required fields as follows: ![src/main/resources/templates/idea-config.png](src/main/resources/templates/idea-config.png)
 8) If your intention is to use it through the `REST` endpoint then, just run the service using any of the already described ways in the steps 4 and 6. Here is an example of the curl request:
 
+##### Example Request
+
 `   curl --location --request GET 'http://localhost:7000/api/v1/validate/123456789?isSampleLead=true' \
    --header 'Content-Type: application/json' \
    --data-raw ''`
 
-### **Architecture**
+##### Example Response
 
-The application is basically composed of 3 independent components, following the hexagonal architecture pattern, the application component, the domain one and the infrastructure one, as it can be seen in the structure of the project and its dependencies (Mongo DB, external services, configuration, UI client, CLI controllers)
-The architecture of the application is shown in the next image:
-
-![src/main/resources/templates/crm-service-architecture.jpg](src/main/resources/templates/crm-service-architecture.jpg)
+`{
+   "lead": {
+      "idNumber": 123456789,
+      "birthDate": [ 2024,
+                     6,
+                     18 ],
+      "firstName": "eOMtThyhVNLWUZNRcBaQKxI",
+      "lastName": "yedUsFwdkelQbxeTeQOvaScfqIOOmaa",
+      "email": "JxkyvRnL@addi.com"
+   },
+   "score": 69,
+   "isAProspect": true,
+   "reasonMessage": "The lead complies with the requested criteria"
+}`
 
 ### **Custom UI Client**
 
@@ -37,5 +63,11 @@ In case you are interested in using the UI client that has been created for this
 ![src/main/resources/templates/client-layout.png](src/main/resources/templates/client-layout.png)
 
 Remember that if you want to use this custom UI client, you should have the crm-lead-validator running. Is recommended that if you want to test with the client, you should run it for simplicity with the docker command explained in the step 2 of the 'How to run the application and its dependencies' section.
+
+### **Resources**
+
+##### Docker Images
+* `https://hub.docker.com/repository/docker/davidgalvis1995/crm_lead_validator`
+* `https://hub.docker.com/repository/docker/davidgalvis1995/externalleadvalidator`
 
 Thank you! :)
